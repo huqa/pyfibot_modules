@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-"Calculates" whattodo and odds. 
+'Calculates' whattodo and odds.
 Created on 9.9.2012
 
 @author: huqa / pikkuhukka@gmail.com
@@ -22,24 +22,24 @@ def command_whattodo(bot, user, channel, args):
     #TODO fixme
     number = 1.0
     percents = []
-    for x in range(1,num_choices+1):
+    for x in range(1, num_choices + 1):
         if x != num_choices:
-            rand = random.uniform(0.0,number) 
+            rand = random.uniform(0.0, number)
             number = number - rand
             #bot.say(channel, "x is %d" % x)
             percents.append(rand)
         elif x == num_choices:
             #bot.say(channel, "x is num_choices %f" % number)
             percents.append(number)
-    
-    out = nick + ", (whattodo) "        
-    i = 1;
+
+    out = nick + ", (whattodo) "
+    i = 1
     for q, a in zip(choices, percents):
-        out += str(q) + ": " + str("{0:.0f}%".format(a*100))
+        out += str(q) + ": " + str("{0:.0f}%".format(a * 100))
         i += 1
-        if i != len(choices)+1:
+        if i != len(choices) + 1:
             out += ","
-        
+
     return bot.say(channel, out)
 
 
@@ -48,7 +48,7 @@ def command_oddsit(bot, user, channel, args):
     nick = getNick(user)
     if not args:
         return bot.say(channel, "%s, painu takas neukkulaan" % nick)
-    
+
     rand = random.random()
-    bot.say(channel, "%s, oddsit: %s %s" % (nick, args, str("{0:.0f}%".format(rand*100))))
+    bot.say(channel, "%s, oddsit: %s %s" % (nick, args, str("{0:.0f}%".format(rand * 100))))
 

@@ -88,25 +88,25 @@ def command_jatsi(bot, user, channel, args):
 # Used for local testing        
 #def getNick(user):
 #    return user
-    
+
 
 class YatzyManager(object):
     """
     Manages different Yatzy-games across channels
     @author: huqa
     """
-    _status = ["lobby","game"]
-    _messages = {"wants_to_play": "!j - %s haluaa pelata jatsia. Ilmoittaudu peliin komennolla !j", 
+    _status = ["lobby", "game"]
+    _messages = {"wants_to_play": "!j - %s haluaa pelata jatsia. Ilmoittaudu peliin komennolla !j",
                  "wants_to_play_help": "!j - %s voi aloittaa pelin komennolla (!j aloita) - (!j eisit) peruu pelin (tai peruuttaa ilmoittautumisen)",
                  "joins_game": "!j - %s liittyi peliin!",
                  "lobby_closed": "!j - liittyminen suljettu",
                  "join_canceled": "!j - %s liittyminen peruttu",
-                 "game_canceled": "!j - %s peli on peruttu" }
+                 "game_canceled": "!j - %s peli on peruttu"}
     _games = {}
     _game_status = {}
     _player_lobby = {}
     _lobby_starters = {}
-    
+
     def __init__(self):
         self._games = {}
 
@@ -122,7 +122,7 @@ class YatzyManager(object):
                     return self._messages['joins_game'] % str(player)
             else:
                 return self._messages['lobby_closed'] % str(player)
-                
+
     def start_lobby_for_channel(self, channel, player):
         """
         Starts a lobby for a channel
@@ -150,8 +150,8 @@ class YatzyManager(object):
                 output.append(self._messages["wants_to_play_help"] % player)
                 return output
             else:
-                return 
-        
+                return
+
     def start_game_for_channel(self, channel, player):
         """
         Starts a game for a channel in lobby-mode 
@@ -169,7 +169,7 @@ class YatzyManager(object):
                         self._games[channel] = game
                         #self._player_lobby[channel] = [] 
                         return game.start_game()
-    
+
     def channel_status(self, channel, status):
         """
         Determines the status of the game for a channel.
@@ -180,8 +180,8 @@ class YatzyManager(object):
             return self._game_status[channel] == status
         else:
             return False
-    
-    def cancel_join(self,channel, player):
+
+    def cancel_join(self, channel, player):
         """
         Cancels join.
         @type: channel: str
@@ -196,9 +196,9 @@ class YatzyManager(object):
                             if a == player:
                                 del self._player_lobby[channel][idx]
                                 return self._messages['join_canceled'] % str(player)
-                            idx = idx + 1
-    
-    def is_lobby_starter(self,channel, player):
+                            idx += 1
+
+    def is_lobby_starter(self, channel, player):
         """
         Is this player the original lobby starter?
         @type channel: str
@@ -208,8 +208,8 @@ class YatzyManager(object):
             return self._lobby_starters[channel] == player
         else:
             return False
-    
-    def is_in_lobby(self,channel,player):
+
+    def is_in_lobby(self, channel, player):
         """
         Is the player in the current channels lobby?
         @type channel: str
@@ -226,20 +226,20 @@ class YatzyManager(object):
         @type player: str  
         """
         if self.is_lobby_starter(channel, player):
-            self._player_lobby[channel] = [] 
+            self._player_lobby[channel] = []
             self._lobby_starters[channel] = ""
             self._game_status[channel] = None
             return self._messages['game_canceled'] % str(player)
-            
+
     def stop_game(self, channel):
         """
         @type channel: str
         @type player: str  
         """
-        self._player_lobby[channel] = [] 
+        self._player_lobby[channel] = []
         self._lobby_starters[channel] = ""
         self._game_status[channel] = None
-        
+
     def process_command(self, channel, player, args):
         """
         Handles command from each channel and forwards it to the corresponding game
@@ -260,19 +260,8 @@ class YatzyManager(object):
                     #find out what command the player trying to say
                     msg = game.do_player_turn(player, args)
                     return msg
-    
-    """
-    def localtest(self,player="huqa",channel="sk"):
-        self.start_lobby_for_channel(channel, player)
-        self.join_game(channel, "keke")
-        return self.start_game_for_channel(channel, player)
-                     
-    def huqa_move(self,args):
-        return self.process_command("sk", "huqa", args)
 
-    def keke_move(self,args):
-        return self.process_command("sk", "keke", args)
-    """
+
 class YatzyGame(object):
     """
     A representation of a game of Yatzy
@@ -280,23 +269,23 @@ class YatzyGame(object):
     """
     _messages = {"its_your_turn": "!j - %s on sinun vuorosi. Heitä noppia komennolla !j. ",
                  "rolled": "!j - %s heitti %s Yht: %s - heittoja jäljellä: %d",
-                 "rolled_some":"!j - %s heitti %s = %s Yht: %s - heittoja jäljellä: %d",
+                 "rolled_some": "!j - %s heitti %s = %s Yht: %s - heittoja jäljellä: %d",
                  "play_help": "",
-                 "dice_saved":"!j - %s lukitsee %s",
-                 "dice_saved_error":"!j - %s tuollaisia noppia ei olekaan",
-                 "dice_already_saved":"!j - %s kaikki nopat on lukittu (hölömö)",
-                 "move_list":"!j - %s %s",
-                 "score_board":"!j - %s tuloksesi: %s",
-                 "move_saved":"!j - %s tallensi tuloksen %s = %s",
-                 "option_error":"!j - tuo ei toimi %s",
-                 "bonus_get":"!j - %s - sait yläkerta-bonuksen _b",
-                 "bonus_not":"!j - %s - et saanut yläkerta-bonusta",
+                 "dice_saved": "!j - %s lukitsee %s",
+                 "dice_saved_error": "!j - %s tuollaisia noppia ei olekaan",
+                 "dice_already_saved": "!j - %s kaikki nopat on lukittu (hölömö)",
+                 "move_list": "!j - %s %s",
+                 "score_board": "!j - %s tuloksesi: %s",
+                 "move_saved": "!j - %s tallensi tuloksen %s = %s",
+                 "option_error": "!j - tuo ei toimi %s",
+                 "bonus_get": "!j - %s - sait yläkerta-bonuksen _b",
+                 "bonus_not": "!j - %s - et saanut yläkerta-bonusta",
                  "override_move": "valitse nollattava kenttä %s",
                  "overridden": "!j - %s, %s on nollattu",
                  "game_over_1": "!j - peli on päättynyt. Tulokset %s",
                  "game_over_2": "!j - **%s** onnittelut voittajalle!"}
-    
-    
+
+
     def __init__(self, players, manager, channel):
         """
         @type players: list
@@ -307,13 +296,13 @@ class YatzyGame(object):
         for name in players:
             #@var name: str
             self._player_list.append(name)
-            self._score_cards[name] = YatzyScoreCard(name) 
-        #print self._score_cards
+            self._score_cards[name] = YatzyScoreCard(name)
+            #print self._score_cards
         self._whos_turn = ""
         self._game_is_on = False
         self.manager = manager
         self.channel = channel
-            
+
     def start_game(self):
         """
         @rtype: str
@@ -325,8 +314,8 @@ class YatzyGame(object):
         scores = self.build_score_list(self.get_score_card(self._whos_turn))
         output.append(self._messages["score_board"] % (self._whos_turn, scores))
         return output
-        
-    def change_player(self, output): 
+
+    def change_player(self, output):
         """
         Changes player
         @type output: list
@@ -362,7 +351,7 @@ class YatzyGame(object):
             scores = self.build_score_list(_card)
             output.append(self._messages["score_board"] % (self._whos_turn, scores))
         return output
-        
+
     def do_player_turn(self, player, args):
         """
         @type player: str
@@ -372,7 +361,7 @@ class YatzyGame(object):
         card = self.get_score_card(player)
         if args:
             arg_list = args.split(" ")
-            is_digit = args.replace(" ","").isdigit()
+            is_digit = args.replace(" ", "").isdigit()
             if is_digit:
                 # all arguments are numbers
                 # should have at least one roll left if saving dice
@@ -403,7 +392,8 @@ class YatzyGame(object):
                         card.save_move_score(args)
                         index = card.get_field_index(card.get_field_by_key(args))
                         output = []
-                        output.append(self._messages['move_saved'] % (str(player), str(card.field_names[index]), str(score)))
+                        output.append(
+                            self._messages['move_saved'] % (str(player), str(card.field_names[index]), str(score)))
                         if card.upstairs_full() and card.gets_upstairs_bonus is False:
                             if card.gets_upstairs_bonus():
                                 output.append(self._messages['bonus_get'] % (str(player)))
@@ -415,11 +405,12 @@ class YatzyGame(object):
                                 card.set_score(args, 0)
                                 index = card.get_field_index(card.get_field_by_key(args))
                                 output = []
-                                output.append(self._messages['overridden'] % (str(player), str(str(card.field_names[index]))))
+                                output.append(
+                                    self._messages['overridden'] % (str(player), str(str(card.field_names[index]))))
                                 return self.change_player(output)
                             else:
                                 return self._messages['option_error'] % str(player)
-                        
+
                         else:
                             return self._messages['option_error'] % str(player)
                 else:
@@ -428,7 +419,7 @@ class YatzyGame(object):
         else:
             # roll dice if throws still left etc.
             return self.roll_dice(player, card)
-            
+
     def roll_dice(self, player, card):
         """
         @type card: YatzyScoreCard
@@ -438,8 +429,8 @@ class YatzyGame(object):
         if card.has_rolls_left():
             dices_amount = 5 - len(card.saved_dice)
             #if dices_amount == 0:
-                #return message that all dices are already locked
-                #return self._messages["dice_already_saved"] % str(player)
+            #return message that all dices are already locked
+            #return self._messages["dice_already_saved"] % str(player)
             rolled_dice = self._roll_dice(player, dices_amount)
             card.decrease_rolls()
             log.info(rolled_dice)
@@ -448,17 +439,18 @@ class YatzyGame(object):
                 dice_together = rolled_dice + card.saved_dice
             else:
                 dice_together = rolled_dice
-            #Timed the lambda-function and the for-loop, turns out the loop is faster
+                #Timed the lambda-function and the for-loop, turns out the loop is faster
             #dice_sum = reduce(lambda x,y: x+y, dice_together)
             dice_sum = 0
             for d in dice_together:
                 dice_sum = dice_sum + d
             msg = ""
             if dices_amount == 5:
-                msg = self._messages["rolled"] % (str(player),str(rolled_dice),str(dice_sum),int(card.rolls_left))
+                msg = self._messages["rolled"] % (str(player), str(rolled_dice), str(dice_sum), int(card.rolls_left))
             else:
-                msg = self._messages["rolled_some"] % (str(player),str(rolled_dice),str(dice_together),str(dice_sum),int(card.rolls_left))
-            # create list of options etc.
+                msg = self._messages["rolled_some"] % (
+                    str(player), str(rolled_dice), str(dice_together), str(dice_sum), int(card.rolls_left))
+                # create list of options etc.
             card.set_last_roll(dice_together)
             card.reset_saved()
             card.reset_moves()
@@ -470,18 +462,16 @@ class YatzyGame(object):
             elif not card.has_rolls_left():
                 # a player can override fields if he wants
                 move_str = self.build_move_list(moves, card)
-                msg = msg + " | " + move_str   
+                msg = msg + " | " + move_str
                 override = self.build_override_list(card)
                 ovr_str = self._messages['override_move'] % (str(override))
-                msg = msg + "tai " + ovr_str                 
-            else: 
+                msg = msg + "tai " + ovr_str
+            else:
                 move_str = self.build_move_list(moves, card)
                 msg = msg + " | " + move_str
             return msg
         else:
-            return self._messages['option_error'] % str(player)        
-        
-                
+            return self._messages['option_error'] % str(player)
 
     def moves_are_empty(self, moves):
         upstairs = moves['upstairs']
@@ -493,25 +483,24 @@ class YatzyGame(object):
             return True
         else:
             return False
-            
-                
+
     def build_move_list(self, moves, card):
         """
         @type moves: dict
         @type card: YatzyScoreCard 
-        """ 
+        """
         upstairs = moves["upstairs"]
         downstairs = moves["downstairs"]
         move_str = ""
-        
+
         sorted_upstairs = sorted(upstairs)
-        
+
         for u in sorted_upstairs:
             dgt = int(u.replace("s", ""))
             score = dgt * upstairs[u]
             index = card.get_field_index(u)
             card.add_move(card.fields_to_keys[index], score)
-            move_str = self.get_move_string(move_str, card, score, index) 
+            move_str = self.get_move_string(move_str, card, score, index)
 
         fields = card.get_fields()
         for d in downstairs:
@@ -532,7 +521,7 @@ class YatzyGame(object):
                     elif d is fields[8]:
                         #toak
                         d_max = max(downstairs[d])
-                        score = (d_max * downstairs[d][d_max])                             
+                        score = (d_max * downstairs[d][d_max])
                     elif d is fields[9]:
                         #foak
                         d_max = max(downstairs[d])
@@ -552,16 +541,16 @@ class YatzyGame(object):
                         #chance
                         score = 0
                         for a in downstairs[d]:
-                            score = score + int(a) 
+                            score = score + int(a)
                     elif d is fields[14]:
                         #_yatzy
                         score = 50
                     index = card.get_field_index(d)
                     card.add_move(card.fields_to_keys[index], score)
-                    move_str = self.get_move_string(move_str, card, score, index) 
-        return move_str   
-    
-    def build_score_list(self, card=None):      
+                    move_str = self.get_move_string(move_str, card, score, index)
+        return move_str
+
+    def build_score_list(self, card=None):
         """
         Builds a formatted string of scores in a score card.
         @type card: YatzyScoreCard
@@ -578,18 +567,18 @@ class YatzyGame(object):
                 scores = scores + "(" + name + " = " + str(all_scores[field]) + ") "
             else:
                 scores = scores + "(" + name + ": " + str(all_scores[field]) + ") "
-            all_sum = all_sum + all_scores[field] 
+            all_sum = all_sum + all_scores[field]
         if card.gets_upstairs_bonus():
             all_sum = all_sum + 50
         scores = scores + "Yht: " + str(all_sum)
         return scores
-    
-    def build_override_list(self,card):
+
+    def build_override_list(self, card):
         """
         Builds a formatted string of overridable fields.
         @type card: YatzyScoreCard
         @rtype: str
-        """        
+        """
         items = ""
         for field in card.get_fields():
             if not card.is_field_used(field):
@@ -599,13 +588,13 @@ class YatzyGame(object):
                 if key not in card.move_list: # filter out the ones that are in the moves list
                     items = items + key + "(" + name + ") "
         return items
-                    
+
     def get_move_string(self, move_str, card, score, index):
         """
         @return: A formatted string in form key(field: score)
         @rtype: str
         """
-        return move_str + card.fields_to_keys[index] + "(" + card.field_names[index] + ": " + str(score) + ") " 
+        return move_str + card.fields_to_keys[index] + "(" + card.field_names[index] + ": " + str(score) + ") "
 
     def valid_dices(self, dices, card):
         """
@@ -630,7 +619,7 @@ class YatzyGame(object):
         self._score_cards = {}
         self._player_list = []
         self.manager.stop_game(self.channel)
-        
+
     def get_score_card(self, player):
         """
         Returns a score card for a player
@@ -638,7 +627,7 @@ class YatzyGame(object):
         """
         if player in self._score_cards:
             return self._score_cards[player]
-        
+
     def _roll_dice(self, roller, dice_amount=5):
         """
         @type roller: str
@@ -646,10 +635,10 @@ class YatzyGame(object):
         @rtype list
         """
         if roller == self._whos_turn:
-            return [randint(1,6) for a in range(dice_amount)]
+            return [randint(1, 6) for a in range(dice_amount)]
         else:
             return None
-        
+
     def is_player_turn(self, player):
         """
         @type player: str
@@ -657,9 +646,9 @@ class YatzyGame(object):
         """
         #log.info("whos turn %s" % str(self._whos_turn))
         return player == self._whos_turn
-    
-            
-    def is_number(self,n):
+
+
+    def is_number(self, n):
         """
         @type n: str or int or float
         """
@@ -667,16 +656,17 @@ class YatzyGame(object):
             float(n)
             return True
         except ValueError:
-            return False       
+            return False
+
 
 class YatzyScoreCard(object):
     """ 
     Yatzy Score card and dice checker
     @author: huqa
     """
-    
+
     _max_rolls = 3
-    
+
     field_names = ["1t",
                    "2t",
                    "3t",
@@ -692,73 +682,73 @@ class YatzyScoreCard(object):
                    "tkasi",
                    "sttma",
                    "jatsi"]
-    
+
     # Name of each field
-    _fields = [ "1s",
-                "2s",
-                "3s",
-                "4s",
-                "5s",
-                "6s",
-                "one_pair",
-                "two_pair",
-                "three_of_a_kind",
-                "four_of_a_kind",
-                "small_straight",
-                "large_straight",
-                "full_house",
-                "chance",
-                "yatzy" ]
+    _fields = ["1s",
+               "2s",
+               "3s",
+               "4s",
+               "5s",
+               "6s",
+               "one_pair",
+               "two_pair",
+               "three_of_a_kind",
+               "four_of_a_kind",
+               "small_straight",
+               "large_straight",
+               "full_house",
+               "chance",
+               "yatzy"]
 
     # These are the corresponding keys to the fields for irc
     _keys_to_fields = {'a': 0,
-                      'b': 1,
-                      'c': 2,
-                      'd': 3,
-                      'e': 4,
-                      'f': 5,
-                      'g': 6,
-                      'h': 7,
-                      'i': 8,
-                      'j': 9,
-                      'k': 10,
-                      'l': 11,
-                      'm': 12,
-                      'n': 13,
-                      'o': 14}
+                       'b': 1,
+                       'c': 2,
+                       'd': 3,
+                       'e': 4,
+                       'f': 5,
+                       'g': 6,
+                       'h': 7,
+                       'i': 8,
+                       'j': 9,
+                       'k': 10,
+                       'l': 11,
+                       'm': 12,
+                       'n': 13,
+                       'o': 14}
     fields_to_keys = ['a',
-                       'b',
-                       'c',
-                       'd',
-                       'e',
-                       'f',
-                       'g',
-                       'h',
-                       'i',
-                       'j',
-                       'k',
-                       'l',
-                       'm',
-                       'n',
-                       'o']
-    
+                      'b',
+                      'c',
+                      'd',
+                      'e',
+                      'f',
+                      'g',
+                      'h',
+                      'i',
+                      'j',
+                      'k',
+                      'l',
+                      'm',
+                      'n',
+                      'o']
+
     def __init__(self, player_name=""):
         self.player_name = player_name
         self._used_fields = {self._fields[0]: False,
-                            self._fields[1]: False,
-                            self._fields[2]: False,
-                            self._fields[3]: False,
-                            self._fields[4]: False,
-                            self._fields[5]: False,
-                            self._fields[6]: False,
-                            self._fields[7]: False,
-                            self._fields[8]: False,
-                            self._fields[9]: False,
-                            self._fields[10]: False,
-                            self._fields[11]: False,
-                            self._fields[12]: False,
-                            self._fields[13]: False,
-                            self._fields[14]: False}
+                             self._fields[1]: False,
+                             self._fields[2]: False,
+                             self._fields[3]: False,
+                             self._fields[4]: False,
+                             self._fields[5]: False,
+                             self._fields[6]: False,
+                             self._fields[7]: False,
+                             self._fields[8]: False,
+                             self._fields[9]: False,
+                             self._fields[10]: False,
+                             self._fields[11]: False,
+                             self._fields[12]: False,
+                             self._fields[13]: False,
+                             self._fields[14]: False}
         self._scores = {self._fields[0]: 0,
                         self._fields[1]: 0,
                         self._fields[2]: 0,
@@ -779,90 +769,149 @@ class YatzyScoreCard(object):
         self.saved_dice = []
         self.move_list = {}
         self.rolls_left = self._max_rolls
-        
-        
+
     def set_last_roll(self, dice):
+        """
+        Sets the lats throw
+        """
         if dice:
             self.last_roll = dice
-            
-    def save_dice(self,dice):
+
+    def save_dice(self, dice):
+        """
+        Saves dice temporarily for use with the next throw
+        """
         if dice:
             if len(self.saved_dice) + len(dice) <= 5:
                 for d in dice:
                     self.saved_dice.append(int(d))
-    
+
     def reset_saved(self):
+        """
+        Clears saved dice
+        """
         self.saved_dice = []
-    
+
     def reset_rolls(self):
+        """
+        Resets rolls back to _max_rolls
+        """
         self.rolls_left = self._max_rolls
-        
+
     def has_rolls_left(self):
+        """
+        Checks if the player has rolls left
+        """
         return self.rolls_left > 0
-    
+
     def get_fields(self):
+        """
+        Fetches all fields
+        """
         return self._fields
-        
+
     def decrease_rolls(self):
+        """
+        Decreses rolls
+        """
         if self.rolls_left > 0:
-            self.rolls_left = self.rolls_left - 1
-    
+            self.rolls_left -= 1
+
     def add_move(self, key, score):
+        """
+        Adds a move to the temporary move list
+        """
         self.move_list[key] = score
 
     def reset_moves(self):
+        """
+        Clears temporary move list
+        """
         self.move_list = {}
-    
+
     def save_move_score(self, key):
+        """
+        Saves a move and it's score in a certain field according to key
+        """
         if key in self.move_list:
             self.set_score(key, self.get_move_score(key))
             self.reset_moves()
-    
+
     def get_move_score(self, key):
+        """
+        Fetches a single moves score according to key
+        """
         if key in self.move_list:
             return self.move_list[key]
 
     def is_field_used(self, field):
+        """
+        Is a certain field used?
+        """
         if field in self._used_fields:
             return self._used_fields[field]
-      
+
     def all_fields_used(self):
+        """
+        Are all field used?
+        """
         for f in self._used_fields:
             if self._used_fields[f] is False:
                 return False
         return True
-    
+
     def get_field_by_key(self, key):
+        """
+        Fetches a field by key
+        """
         if key in self._keys_to_fields:
             return self._fields[self._keys_to_fields[key]]
         else:
             return None
 
     def get_field_index(self, field):
+        """
+        Fetches a fields index
+        """
         if field in self._fields:
             return self._fields.index(field)
         else:
             return None
 
     def set_score(self, key, score=0):
+        """
+        Sets score by field
+        """
         field = self.get_field_by_key(key)
         if field:
             self._scores[field] = score
             self._used_fields[field] = True
-            
+
     def get_score(self, field):
+        """
+        Fetches a score according to field
+        """
         return self._scores[field]
-            
+
     def get_scores(self):
+        """
+        Fetch all scores
+        """
         return self._scores
-       
+
     def upstairs_full(self):
+        """
+        Are all upstairs fields used?
+        """
         for i in range(6):
             if not self.is_field_used(self._fields[i]):
                 return False
         return True
-    
+
     def gets_upstairs_bonus(self):
+        """
+        Checks if the player gets a bonus from upstair scores
+        """
         score = 0
         for i in range(6):
             if self.is_field_used(self._fields[i]):
@@ -872,13 +921,13 @@ class YatzyScoreCard(object):
             return True
         else:
             return False
-    
+
     def check_dice(self, dice):
-        """Checks a list of dice for combination of moves"""
+        """Checks a list of dice for combination of both upstairs and downstairs moves"""
         dice_amount = len(dice)
         if dice_amount <= 0:
             return []
-        
+
         combinations = {}
         upstairs_results = self.calculate_upstair_combinations(dice)
         downstairs_results = self.calculate_downstair_combinations(dice)
@@ -886,50 +935,61 @@ class YatzyScoreCard(object):
         combinations['downstairs'] = downstairs_results
         return combinations
 
-    def calculate_upstair_combinations(self,dice):
-        """Fetches number counts on a dice-set"""
+    def calculate_upstair_combinations(self, dice):
+        """
+        Fetches a dict of all possible combinations for upstairs moves
+        """
         results = {}
-        for n in range(1,7):
+        for n in range(1, 7):
             if dice.count(n) > 0:
                 # Let's not count used fields to the results
-                if not self.is_field_used(self._fields[(n-1)]):
-                    results[self._fields[(n-1)]] = dice.count(n)
+                if not self.is_field_used(self._fields[(n - 1)]):
+                    results[self._fields[(n - 1)]] = dice.count(n)
         return results
-                    
-    def calculate_downstair_combinations(self,dice):
+
+    def calculate_downstair_combinations(self, dice):
+        """
+        Fetches a dict of all possible combinations for downstairs moves
+        """
         results = {}
-        for n in range(7,16):
+        for n in range(7, 16):
             # Let's not count used fields to the results
-            if not self.is_field_used(self._fields[(n-1)]):
+            if not self.is_field_used(self._fields[(n - 1)]):
                 if n is 7:
-                    results[self._fields[(n-1)]] = self._one_pair(dice)
+                    results[self._fields[(n - 1)]] = self._one_pair(dice)
                 elif n is 8:
-                    results[self._fields[(n-1)]] = self._two_pair(dice)
+                    results[self._fields[(n - 1)]] = self._two_pair(dice)
                 elif n is 9:
-                    results[self._fields[(n-1)]] = self._three_of_a_kind(dice)
+                    results[self._fields[(n - 1)]] = self._three_of_a_kind(dice)
                 elif n is 10:
-                    results[self._fields[(n-1)]] = self._four_of_a_kind(dice)
+                    results[self._fields[(n - 1)]] = self._four_of_a_kind(dice)
                 elif n is 11:
-                    results[self._fields[(n-1)]] = self._small_straight(dice)
+                    results[self._fields[(n - 1)]] = self._small_straight(dice)
                 elif n is 12:
-                    results[self._fields[(n-1)]] = self._large_straight(dice)
+                    results[self._fields[(n - 1)]] = self._large_straight(dice)
                 elif n is 13:
-                    results[self._fields[(n-1)]] = self._full_house(dice)
+                    results[self._fields[(n - 1)]] = self._full_house(dice)
                 elif n is 14:
                     #chance
-                    results[self._fields[(n-1)]] = dice
+                    results[self._fields[(n - 1)]] = dice
                 elif n is 15:
-                    results[self._fields[(n-1)]] = self._yatzy(dice)
+                    results[self._fields[(n - 1)]] = self._yatzy(dice)
         return results
-    
+
     def _one_pair(self, dice):
+        """
+        Checks dice for one pair
+        """
         results = {}
-        for d in range(1,7):
+        for d in range(1, 7):
             if dice.count(d) >= 2:
                 results[d] = dice.count(d)
         return results
-    
+
     def _two_pair(self, dice):
+        """
+        Checks dice for two pairs
+        """
         results = self._one_pair(dice)
         if len(results) >= 2:
             return results
@@ -939,49 +999,66 @@ class YatzyScoreCard(object):
                 if results[d] >= 4:
                     return results
             return {}
-            
+
     def _three_of_a_kind(self, dice):
+        """
+        Checks dice for three of a kind
+        """
         results = {}
-        for d in range(1,7):
+        for d in range(1, 7):
             if dice.count(d) >= 3:
                 results[d] = 3
-        return results        
-    
+        return results
+
     def _four_of_a_kind(self, dice):
+        """
+        Checks dice for four of a kind
+        """
         results = {}
-        for d in range(1,7):
+        for d in range(1, 7):
             if dice.count(d) >= 4:
                 results[d] = 4
-        return results  
-    
+        return results
+
     def _small_straight(self, dice):
-        small_st = [1,2,3,4,5]
+        """
+        Checks dice for large straight (1,2,3,4,5)
+        """
+        small_st = [1, 2, 3, 4, 5]
         sorted_dice = sorted(dice)
         return small_st == sorted_dice
 
     def _large_straight(self, dice):
-        large_st = [2,3,4,5,6]
+        """
+        Checks dice for large straight (2,3,4,5,6)
+        """
+        large_st = [2, 3, 4, 5, 6]
         sorted_dice = sorted(dice)
         return large_st == sorted_dice
-    
+
     def _full_house(self, dice):
+        """
+        Checks dice for full house
+        """
         results = {}
         pair_used = False
-        for d in range(1,7):
+        for d in range(1, 7):
             if dice.count(d) == 2 and pair_used is False:
                 results[d] = dice.count(d)
                 pair_used = True
             elif dice.count(d) == 3:
                 results[d] = dice.count(d)
         if len(results) == 2:
-                return results
+            return results
         else:
-                return {}
-        
+            return {}
+
     def _yatzy(self, dice):
+        """
+        Checks dice for yatzy (five of the same kind)
+        """
         results = {}
-        for d in range(1,7):
+        for d in range(1, 7):
             if dice.count(d) == 5:
                 results[d] = dice.count(d)
-        return results 
-    
+        return results

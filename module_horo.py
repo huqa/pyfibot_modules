@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Fetches horoscopes from iltalehti.fi
 Created on Oct 17, 2012
 
 @author: huqa / pikkuhukka@gmail.com
-'''
+"""
 
 import re
 horo_url = "http://www.iltalehti.fi/horoskooppi"
+
 
 def command_horo(bot, user, channel, args):
     """Hakee päivittäisen horoskoopin. Käyttö !horo <horoskooppimerkki>"""

@@ -57,7 +57,7 @@ class Pyssy:
         if Pyssy.current_slot >= 5:
             Pyssy.current_slot = 0
         else:
-            Pyssy.current_slot = Pyssy.current_slot + 1
+            Pyssy.current_slot += 1
 
     def gun_in_use(self, in_use):
         Pyssy.is_in_use = in_use
@@ -103,16 +103,17 @@ lucky_reason_msgs = ["*PYSSY RUOSTUU KASAAN*",
                      "*PYSSY OLI OSTETTU BILTEMASTA* *MITÄÄN EI TAPAHDU*",
                      "*PYSSY OLIKIN LEIKKIASE*"]
 
+
 def command_pyssy(bot, user, channel, args):
     """Laittaa patruunan revolveriin"""
     nick = getNick(user)
     if args:
         args = str(args).strip()
         player = get_player(args)
-        if player != False:
+        if player:
             line = "!pyssy pelaaja %s on kuollut %d kertaa" % (str(args), int(player[2]))
             if int(player[3]) > 0:
-                line = line + " ja on ollut jumalten valittu %d kertaa" % (int(player[3]),)
+                line += " ja on ollut jumalten valittu %d kertaa" % (int(player[3]),)
             return bot.say(channel, line)
         else:
             return bot.say(channel, "!pyssy pelaajaa %s ei löydy, %s" % (args, nick))
@@ -123,13 +124,14 @@ def command_pyssy(bot, user, channel, args):
     
     return bot.say(channel, "!pyor sekoittaa pakan, !ammu ampuu")
 
+
 def command_pyor(bot, user, channel, args):
     """Pyöräyttää pistoolin pakkaa"""
     nick = getNick(user)
     if pyssy.has_bullet is False:
         return bot.say(channel, "Pyssy on tyhjänä tonko %s" % nick)
     else:
-        if pyssy.is_in_use == False:
+        if not pyssy.is_in_use:
             pyssy.gun_in_use(True)
             spin_str = random.randint(2, 78)    
             pyssy.set_current_slot(spin_str)
@@ -150,8 +152,8 @@ def command_ammu(bot, user, channel, args):
     if pyssy.has_bullet is False:
         return bot.say(channel, "Pyssy on tyhjänä tonko %s" % nick)
     else:
-        if pyssy.is_in_use == False:
-            pyssy.gun_in_use(True)   
+        if not pyssy.is_in_use:
+            pyssy.gun_in_use(True)
             shoot_gun(bot, nick, channel)
         else:
             return
@@ -199,6 +201,7 @@ def is_in_db(nick):
     else:
         return True
 
+
 def get_player(nick):
     db_conn = sqlite3.connect("pyssy.db")
     d = db_conn.cursor()
@@ -211,6 +214,7 @@ def get_player(nick):
     else:
         return player
 
+
 def add_user(nick):
     db_conn = sqlite3.connect("pyssy.db")
     d = db_conn.cursor()
@@ -218,14 +222,14 @@ def add_user(nick):
     db_conn.commit()
     d.close()
     db_conn.close()
-    
+
 def incr_deaths(nick):
     db_conn = sqlite3.connect("pyssy.db")
     d = db_conn.cursor()
     d.execute("SELECT id, deaths FROM stats WHERE player = ?", (nick,))
     player = d.fetchone()
     deaths = int(player[1])
-    deaths = deaths + 1
+    deaths += 1
     d.execute("UPDATE stats SET deaths = ? WHERE id = ?", (int(deaths),int(player[0])))
     db_conn.commit()
     d.close()
@@ -238,7 +242,7 @@ def incr_lucks(nick):
     d.execute("SELECT id, lucks FROM stats WHERE player = ?", (nick,))
     player = d.fetchone()
     lucks = int(player[1])
-    lucks = lucks + 1
+    lucks += 1
     d.execute("UPDATE stats SET lucks = ? WHERE id = ?", (int(lucks),int(player[0])))
     db_conn.commit()
     d.close()
