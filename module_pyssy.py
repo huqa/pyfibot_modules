@@ -9,16 +9,15 @@ import random
 import time
 import sqlite3
 
+db_name = "pyssy.db"
+
 
 def init(botconfig):
     """Create database"""
-    
-    db_conn = sqlite3.connect("pyssy.db")
-    d = db_conn.cursor()
+    db_conn, d = open_db_conn(db_name)
     d.execute("CREATE TABLE IF NOT EXISTS stats (id INTEGER PRIMARY KEY, player TEXT, deaths INT, lucks INT);")
     db_conn.commit()
-    d.close()
-    db_conn.close()
+    close_db_conn(db_conn, d)
 
 
 class Pyssy:
@@ -32,35 +31,35 @@ class Pyssy:
     bullet_slot = 0
     
     def __init__(self):
-        Pyssy.has_bullet = False
-        Pyssy.bullet_slot = 0
-        Pyssy.current_slot = 0
+        self.has_bullet = False
+        self.bullet_slot = 0
+        self.current_slot = 0
 
     def start(self):
         """Puts a bullet in the gun"""
-        Pyssy.has_bullet = True
-        Pyssy.bullet_slot = random.randint(0, 5)
+        self.has_bullet = True
+        self.bullet_slot = random.randint(0, 5)
 
     def stop(self):
         """Resets the gun"""
-        Pyssy.has_bullet = False
-        Pyssy.bullet_slot = 0
-        Pyssy.is_in_use = False
+        self.has_bullet = False
+        self.bullet_slot = 0
+        self.is_in_use = False
 
     def set_current_slot(self, index):
         """Spins the barrel of the gun index-times"""
         full_circles = index % 6
-        for i in range(0,full_circles):
+        for i in range(0, full_circles):
             Pyssy.incr_current_slot(self)
 
     def incr_current_slot(self):
-        if Pyssy.current_slot >= 5:
-            Pyssy.current_slot = 0
+        if self.current_slot >= 5:
+            self.current_slot = 0
         else:
-            Pyssy.current_slot += 1
+            self.current_slot += 1
 
     def gun_in_use(self, in_use):
-        Pyssy.is_in_use = in_use
+        self.is_in_use = in_use
 
 
 pyssy = Pyssy()
@@ -74,7 +73,7 @@ gulp_msgs = ["nostaa aseen tärisevin käsin ohimolleen.",
              "HUH HUH",
              "tärisee",
              "*nyt ei käy hyvin*",
-             "*paskoo housuihinsa*"]
+             "*gulp*"]
 klik_msgs = ["*KLIK*",
              "*KLIK* huhhuh",
              "*CLIQUE*",
@@ -145,7 +144,8 @@ def command_pyor(bot, user, channel, args):
             shoot_gun(bot, nick, channel)
         else:
             return
-    
+
+
 def command_ammu(bot, user, channel, args):
     """Ampuu pistoolilla"""
     nick = getNick(user)
@@ -158,6 +158,7 @@ def command_ammu(bot, user, channel, args):
         else:
             return
 
+
 def shoot_gun(bot, nick, channel):
     gulp_len = len(gulp_msgs)
     wait_time = random.randint(2,3)
@@ -167,8 +168,9 @@ def shoot_gun(bot, nick, channel):
     if pyssy.current_slot == pyssy.bullet_slot:
         if not is_in_db(nick):
             add_user(nick)
-        bonus = random.randint(0,99)
+        bonus = random.randint(0, 99)
         if bonus >= 90:
+            time.sleep(wait_time)
             lck_len = len(lucky_msgs)
             reason_len = len(lucky_reason_msgs)
             incr_lucks(nick)
@@ -183,19 +185,29 @@ def shoot_gun(bot, nick, channel):
     else:
         time.sleep(wait_time)
         klik_len = len(klik_msgs)
-        bot.say(channel, "%s" % klik_msgs[random.randint(0,klik_len-1)])
+        bot.say(channel, "%s" % klik_msgs[random.randint(0, klik_len-1)])
         pyssy.incr_current_slot()
         pyssy.gun_in_use(False)
 
 
 #Quickly made sqlite functions for saving users
-def is_in_db(nick):
-    db_conn = sqlite3.connect("pyssy.db")
+
+def open_db_conn(db_name):
+    db_conn = sqlite3.connect(db_name)
     d = db_conn.cursor()
+    return db_conn, d
+
+
+def close_db_conn(db_conn, d):
+    d.close()
+    db_conn.close()
+
+
+def is_in_db(nick):
+    db_conn, d = open_db_conn(db_name)
     d.execute("SELECT id FROM stats WHERE player = ?", (nick,))
     player = d.fetchone()
-    d.close()
-    db_conn.close()    
+    close_db_conn(db_conn, d)
     if not player:
         return False
     else:
@@ -203,12 +215,10 @@ def is_in_db(nick):
 
 
 def get_player(nick):
-    db_conn = sqlite3.connect("pyssy.db")
-    d = db_conn.cursor()
+    db_conn, d = open_db_conn(db_name)
     d.execute("SELECT * FROM stats WHERE player = ?", (str(nick),))
     player = d.fetchone()
-    d.close()
-    db_conn.close()    
+    close_db_conn(db_conn, d)
     if not player:
         return False
     else:
@@ -216,34 +226,29 @@ def get_player(nick):
 
 
 def add_user(nick):
-    db_conn = sqlite3.connect("pyssy.db")
-    d = db_conn.cursor()
+    db_conn, d = open_db_conn(db_name)
     d.execute("INSERT INTO stats (player, deaths, lucks) VALUES (?,?,?)", (nick, 0, 0))
     db_conn.commit()
-    d.close()
-    db_conn.close()
+    close_db_conn(db_conn, d)
+
 
 def incr_deaths(nick):
-    db_conn = sqlite3.connect("pyssy.db")
-    d = db_conn.cursor()
+    db_conn, d = open_db_conn(db_name)
     d.execute("SELECT id, deaths FROM stats WHERE player = ?", (nick,))
     player = d.fetchone()
     deaths = int(player[1])
     deaths += 1
-    d.execute("UPDATE stats SET deaths = ? WHERE id = ?", (int(deaths),int(player[0])))
+    d.execute("UPDATE stats SET deaths = ? WHERE id = ?", (int(deaths), int(player[0])))
     db_conn.commit()
-    d.close()
-    db_conn.close()
+    close_db_conn(db_conn, d)
     
     
 def incr_lucks(nick):
-    db_conn = sqlite3.connect("pyssy.db")
-    d = db_conn.cursor()
+    db_conn, d = open_db_conn(db_name)
     d.execute("SELECT id, lucks FROM stats WHERE player = ?", (nick,))
     player = d.fetchone()
     lucks = int(player[1])
     lucks += 1
-    d.execute("UPDATE stats SET lucks = ? WHERE id = ?", (int(lucks),int(player[0])))
+    d.execute("UPDATE stats SET lucks = ? WHERE id = ?", (int(lucks), int(player[0])))
     db_conn.commit()
-    d.close()
-    db_conn.close()
+    close_db_conn(db_conn, d)
