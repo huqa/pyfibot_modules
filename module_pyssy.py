@@ -35,7 +35,7 @@ class Gun:
         """Spins the barrel of the gun index-times"""
         full_circles = index % 6
         for i in range(0, full_circles):
-            self.incr_current_slot(self)
+            self.incr_current_slot()
 
     def incr_current_slot(self):
         if self.current_slot >= 5:
@@ -105,7 +105,7 @@ def command_pyor(bot, user, channel, args):
     if pyssy.has_bullet is False:
         return bot.say(channel, "Pyssy on tyhjänä tonko %s" % nick)
     else:
-        if not pyssy.is_in_use:
+        if not pyssy.in_use:
             pyssy.gun_in_use(True)
             spin_str = random.randint(2, 78)    
             pyssy.set_current_slot(spin_str)
@@ -127,7 +127,7 @@ def command_ammu(bot, user, channel, args):
     if pyssy.has_bullet is False:
         return bot.say(channel, "Pyssy on tyhjänä tonko %s" % nick)
     else:
-        if not pyssy.is_in_use:
+        if not pyssy.in_use:
             pyssy.gun_in_use(True)
             return shoot_gun(bot, nick, channel)
         else:
