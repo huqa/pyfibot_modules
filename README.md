@@ -14,5 +14,6 @@ module overview
                     and oddsit tells what are the odds of something happening.
  - module_lotto: Draws seven numbers between 1-39 for the finnish lottery.
  - module_pyssy: A russian roulette game. Doesn't currently support multiple channels.
+ - module_tkl: Tampere bus stop timetables. Fetches incoming lines with a stops number. Includes user based saving of favourite stops with keywords.
  - module_yatzy: A game of yatzy for multiple channels and multiple players.
                  Game output has been minimized, but still a dedicated channel is recommended.
